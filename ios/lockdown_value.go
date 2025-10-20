@@ -60,6 +60,7 @@ type AllValuesType struct {
 	ChipSerialNo                                []byte
 	DeviceClass                                 string
 	DeviceColor                                 string
+	DeviceEnclosureColor                        string
 	DeviceName                                  string
 	DieID                                       int
 	EthernetAddress                             string

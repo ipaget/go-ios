@@ -54,6 +54,29 @@ func (c *Client) ListIcons() ([]Screen, error) {
 	return screens, nil
 }
 
+// GetIconPNGData retrieves the PNG icon data for a specific bundle identifier
+func (c *Client) GetIconPNGData(bundleID string) ([]byte, error) {
+	err := c.plistCodec.Write(map[string]any{
+		"command":  "getIconPNGData",
+		"bundleId": bundleID,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("could not write plist: %w", err)
+	}
+
+	var response map[string]interface{}
+	err = c.plistCodec.Read(&response)
+	if err != nil {
+		return nil, fmt.Errorf("could not read plist: %w", err)
+	}
+
+	if pngData, ok := response["pngData"].([]byte); ok {
+		return pngData, nil
+	}
+
+	return nil, fmt.Errorf("no PNG data returned for bundle ID: %s", bundleID)
+}
+
 // Screen is a list of Icons displayed on one page of the home screen
 // the first entry is always the bar on the bottom of the home screen (also if it is empty)
 type Screen []Icon
