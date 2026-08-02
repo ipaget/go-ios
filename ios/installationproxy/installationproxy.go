@@ -54,6 +54,32 @@ func New(device ios.DeviceEntry) (*Connection, error) {
 	return &Connection{deviceConn: deviceConn, plistCodec: ios.NewPlistCodec()}, nil
 }
 
+type Options struct {
+	ApplicationType          string
+	ReturnAttributes         []string
+	ShowLaunchProhibitedApps bool
+}
+
+func (conn *Connection) Browse(options Options) ([]AppInfo, error) {
+	clientOptions := map[string]interface{}{}
+	if options.ApplicationType != "" {
+		clientOptions["ApplicationType"] = options.ApplicationType
+	}
+	if options.ShowLaunchProhibitedApps {
+		clientOptions["ShowLaunchProhibitedApps"] = true
+	}
+	if len(options.ReturnAttributes) > 0 {
+		clientOptions["ReturnAttributes"] = options.ReturnAttributes
+	}
+
+	request := map[string]interface{}{
+		"ClientOptions": clientOptions,
+		"Command":       "Browse",
+	}
+
+	return conn.browseApps(request)
+}
+
 func (conn *Connection) BrowseUserApps() ([]AppInfo, error) {
 	return conn.browseApps(browseApps("User", true))
 }

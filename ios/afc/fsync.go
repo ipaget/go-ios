@@ -42,6 +42,13 @@ func (s *statInfo) IsLink() bool {
 	return s.stIfmt == "S_IFLNK"
 }
 
+func (s *statInfo) Size() int64 {
+	if s == nil {
+		return 0
+	}
+	return s.stSize
+}
+
 func New(device ios.DeviceEntry) (*Connection, error) {
 	deviceConn, err := ios.ConnectToService(device, serviceName)
 	if err != nil {

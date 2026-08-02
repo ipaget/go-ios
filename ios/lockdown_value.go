@@ -27,6 +27,10 @@ type NonVolatileRAMType struct {
 	ComAppleSystemTz0Size []byte `plist:"com.apple.System.tz0-size"`
 	OblitBegins           []byte `plist:"oblit-begins"`
 	Obliteration          []byte `plist:"obliteration"`
+	FMAccountMasked       []byte `plist:"fm-account-masked"`
+	FMActivationLocked    []byte `plist:"fm-activation-locked"`
+	FMServiceProviderKeys []byte `plist:"fm-spkeys"`
+	FMServiceProvider     []byte `plist:"fm-spstatus"`
 }
 
 // GetAllValuesResponse just the wrapper for AllValuesType

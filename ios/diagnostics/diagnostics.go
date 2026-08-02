@@ -13,6 +13,14 @@ type Connection struct {
 	plistCodec ios.PlistCodec
 }
 
+func (diagnosticsConn *Connection) DeviceConn() ios.DeviceConnectionInterface {
+	return diagnosticsConn.deviceConn
+}
+
+func (diagnosticsConn *Connection) PlistCodec() ios.PlistCodec {
+	return diagnosticsConn.plistCodec
+}
+
 func New(device ios.DeviceEntry) (*Connection, error) {
 	deviceConn, err := ios.ConnectToService(device, serviceName)
 	if err != nil {
