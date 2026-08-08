@@ -5,15 +5,21 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"howett.net/plist"
 	"io"
 	"reflect"
+
+	"howett.net/plist"
 
 	log "github.com/sirupsen/logrus"
 )
 
 // PlistCodec is a codec for PLIST based services with [4 byte big endian length][plist-payload] based messages
 type PlistCodec struct{}
+
+// MaxPlistPayloadSize caps the payload length read from a plist-framed
+// service. Lengths beyond this are treated as corrupt framing rather than
+// real data, preventing huge allocations on a misaligned stream.
+const MaxPlistPayloadSize = 256 * 1024 * 1024 // 256 MiB
 
 // NewPlistCodec create a codec for PLIST based services with [4 byte big endian length][plist-payload] based messages
 func NewPlistCodec() PlistCodec {
@@ -50,6 +56,9 @@ func (plistCodec PlistCodec) Decode(r io.Reader) ([]byte, error) {
 		return nil, err
 	}
 	length := binary.BigEndian.Uint32(buf)
+	if length > MaxPlistPayloadSize {
+		return nil, fmt.Errorf("plist payload length %d exceeds limit %d", length, MaxPlistPayloadSize)
+	}
 	payloadBytes := make([]byte, length)
 	n, err := io.ReadFull(r, payloadBytes)
 	if err != nil {
@@ -103,6 +112,9 @@ func (p PlistCodecReadWriter) Read(v interface{}) error {
 		return fmt.Errorf("Read: failed to read message length: %w", err)
 	}
 	length := binary.BigEndian.Uint32(buf)
+	if length > MaxPlistPayloadSize {
+		return fmt.Errorf("Read: plist payload length %d exceeds limit %d", length, MaxPlistPayloadSize)
+	}
 	payloadBytes := make([]byte, length)
 	n, err := io.ReadFull(p.r, payloadBytes)
 	if uint32(n) != length {

@@ -42,77 +42,95 @@ type GetAllValuesResponse struct {
 // AllValuesType contains all possible values that can be requested from
 // LockDown
 type AllValuesType struct {
-	ActivationState                             string
-	ActivationStateAcknowledged                 bool
-	BasebandActivationTicketVersion             string
-	BasebandCertID                              int `plist:"BasebandCertId"`
-	BasebandChipID                              int
-	BasebandKeyHashInformation                  BasebandKeyHashInformationType
-	BasebandMasterKeyHash                       string
-	BasebandRegionSKU                           []byte
-	BasebandSerialNumber                        []byte
-	BasebandStatus                              string
-	BasebandVersion                             string
-	BluetoothAddress                            string
-	BoardID                                     int `plist:"BoardId"`
-	BrickState                                  bool
-	BuildVersion                                string
-	CPUArchitecture                             string
-	CarrierBundleInfoArray                      []interface{}
-	CertID                                      int
-	ChipID                                      int
-	ChipSerialNo                                []byte
-	DeviceClass                                 string
-	DeviceColor                                 string
-	DeviceEnclosureColor                        string
-	DeviceName                                  string
-	DieID                                       int
-	EthernetAddress                             string
-	FirmwareVersion                             string
-	FusingStatus                                int
-	HardwareModel                               string
-	HardwarePlatform                            string
-	HasSiDP                                     bool
-	HostAttached                                bool
-	InternationalMobileEquipmentIdentity        string
-	MLBSerialNumber                             string
-	MobileEquipmentIdentifier                   string
-	MobileSubscriberCountryCode                 string
-	MobileSubscriberNetworkCode                 string
-	ModelNumber                                 string
-	NonVolatileRAM                              NonVolatileRAMType
-	PartitionType                               string
-	PasswordProtected                           bool
-	PkHash                                      []byte
-	ProductName                                 string
-	ProductType                                 string
-	ProductVersion                              string
-	ProductionSOC                               bool
-	ProtocolVersion                             string
-	ProximitySensorCalibration                  []byte
-	RegionInfo                                  string
-	SBLockdownEverRegisteredKey                 bool
-	SIMStatus                                   string
-	SIMTrayStatus                               string
-	SerialNumber                                string
-	SoftwareBehavior                            []byte
-	SoftwareBundleVersion                       string
-	SupportedDeviceFamilies                     []int
-	TelephonyCapability                         bool
-	TimeIntervalSince1970                       float64
-	TimeZone                                    string
-	TimeZoneOffsetFromUTC                       float64
-	TrustedHostAttached                         bool
-	UniqueChipID                                uint64
-	UniqueDeviceID                              string
-	UseRaptorCerts                              bool
-	Uses24HourClock                             bool
-	WiFiAddress                                 string
-	WirelessBoardSerialNumber                   string
-	KCTPostponementInfoPRIVersion               string `plist:"kCTPostponementInfoPRIVersion"`
-	KCTPostponementInfoPRLName                  int    `plist:"kCTPostponementInfoPRLName"`
-	KCTPostponementInfoServiceProvisioningState bool   `plist:"kCTPostponementInfoServiceProvisioningState"`
-	KCTPostponementStatus                       string `plist:"kCTPostponementStatus"`
+	ActivationState                               string
+	ActivationStateAcknowledged                   bool
+	BasebandActivationTicketVersion               string
+	BasebandCertID                                int `plist:"BasebandCertId"`
+	BasebandChipID                                int
+	BasebandKeyHashInformation                    BasebandKeyHashInformationType
+	BasebandMasterKeyHash                         string
+	BasebandRegionSKU                             []byte
+	BasebandSerialNumber                          []byte
+	BasebandStatus                                string
+	BasebandVersion                               string
+	BluetoothAddress                              string
+	BoardID                                       int `plist:"BoardId"`
+	BootSessionID                                 string
+	BrickState                                    bool
+	BuildVersion                                  string
+	CPUArchitecture                               string
+	CarrierBundleInfoArray                        []interface{}
+	CertID                                        int
+	ChipID                                        int
+	ChipSerialNo                                  []byte
+	DeviceClass                                   string
+	DeviceColor                                   string
+	DeviceBackingColor                            string
+	DeviceCoverGlassColor                         string
+	DeviceEnclosureColor                          string
+	DeviceName                                    string
+	DeviceHousingColor                            string
+	DieID                                         int
+	EthernetAddress                               string
+	FirmwareVersion                               string
+	FusingStatus                                  int
+	HardwareModel                                 string
+	HardwarePlatform                              string
+	HasSiDP                                       bool
+	HostAttached                                  bool
+	HumanReadableProductVersionString             string
+	InternationalMobileEquipmentIdentity          string
+	InternationalMobileEquipmentIdentity2         string
+	InternationalMobileSubscriberIdentity         string
+	InternationalMobileSubscriberIdentity2        string
+	InternationalMobileSubscriberIdentityOverride bool
+	IntegratedCircuitCardIdentity                 string
+	IntegratedCircuitCardIdentity2                string
+	MLBSerialNumber                               string
+	MobileEquipmentIdentifier                     string
+	MobileSubscriberCountryCode                   string
+	MobileSubscriberNetworkCode                   string
+	ModelNumber                                   string
+	NonVolatileRAM                                NonVolatileRAMType
+	PairRecordProtectionClass                     int
+	PhoneNumber                                   string
+	PartitionType                                 string
+	PasswordProtected                             bool
+	PkHash                                        []byte
+	PRIVersionMajor                               int `plist:"PRIVersion_Major"`
+	PRIVersionMinor                               int `plist:"PRIVersion_Minor"`
+	PRIVersionReleaseNo                           int `plist:"PRIVersion_ReleaseNo"`
+	ProductName                                   string
+	ProductType                                   string
+	ProductVersion                                string
+	ProductionSOC                                 bool
+	ProtocolVersion                               string
+	ProximitySensorCalibration                    []byte
+	RegionInfo                                    string
+	SBLockdownEverRegisteredKey                   bool
+	SIM1IsEmbedded                                bool
+	SIM2IsEmbedded                                bool
+	SIMStatus                                     string
+	SIMTrayStatus                                 string
+	SerialNumber                                  string
+	SoftwareBehavior                              []byte
+	SoftwareBundleVersion                         string
+	SupportedDeviceFamilies                       []int
+	TelephonyCapability                           bool
+	TimeIntervalSince1970                         float64
+	TimeZone                                      string
+	TimeZoneOffsetFromUTC                         float64
+	TrustedHostAttached                           bool
+	UniqueChipID                                  uint64
+	UniqueDeviceID                                string
+	UseRaptorCerts                                bool
+	Uses24HourClock                               bool
+	WiFiAddress                                   string
+	WirelessBoardSerialNumber                     string
+	KCTPostponementInfoPRIVersion                 string `plist:"kCTPostponementInfoPRIVersion"`
+	KCTPostponementInfoPRLName                    int    `plist:"kCTPostponementInfoPRLName"`
+	KCTPostponementInfoServiceProvisioningState   bool   `plist:"kCTPostponementInfoServiceProvisioningState"`
+	KCTPostponementStatus                         string `plist:"kCTPostponementStatus"`
 }
 
 type valueRequest struct {

@@ -44,3 +44,23 @@ func (c Connection) GetDisplayInfo() (map[string]interface{}, error) {
 
 	return nil, fmt.Errorf("GetDisplayInfo: could not parse response %+v", response)
 }
+
+func (c Connection) QueryMobileGestalt(keys []string) (map[string]interface{}, error) {
+	request := coredevice.BuildRequest(c.deviceId, "com.apple.coredevice.feature.querymobilegestalt", map[string]interface{}{
+		"keys": keys,
+	})
+	if err := c.conn.Send(request, xpc.HeartbeatRequestFlag); err != nil {
+		return nil, fmt.Errorf("QueryMobileGestalt: failed to send request: %w", err)
+	}
+
+	response, err := c.conn.ReceiveOnServerClientStream()
+	if err != nil {
+		return nil, fmt.Errorf("QueryMobileGestalt: failed to receive response: %w", err)
+	}
+
+	if output, ok := response["CoreDevice.output"].(map[string]interface{}); ok {
+		return output, nil
+	}
+
+	return nil, fmt.Errorf("QueryMobileGestalt: could not parse response %+v", response)
+}

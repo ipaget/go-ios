@@ -11,6 +11,10 @@ import (
 	"github.com/danielpaulus/go-ios/ios/nskeyedarchiver"
 )
 
+// maxDtxMessageSize caps the per-message byte sizes read by ReadMessage.
+// Oversized or corrupt lengths must not trigger huge allocations.
+const maxDtxMessageSize = 256 * 1024 * 1024 // 256 MiB
+
 // ReadMessage uses the reader to fully read a Message from it in blocking mode.
 func ReadMessage(reader io.Reader) (Message, error) {
 	header := make([]byte, 32)
@@ -30,6 +34,9 @@ func ReadMessage(reader io.Reader) (Message, error) {
 			// put in the header as bytes here
 			result.fragmentBytes = header
 			return result, nil
+		}
+		if result.MessageLength > maxDtxMessageSize {
+			return Message{}, fmt.Errorf("dtx fragment length %d exceeds limit %d", result.MessageLength, maxDtxMessageSize)
 		}
 		// 32 offset is correct, the binary starts with a payload header
 		messageBytes := make([]byte, result.MessageLength)
@@ -65,6 +72,9 @@ func ReadMessage(reader io.Reader) (Message, error) {
 			return Message{}, err
 		}
 		result.AuxiliaryHeader = header
+		if result.AuxiliaryHeader.AuxiliarySize > maxDtxMessageSize {
+			return Message{}, fmt.Errorf("dtx auxiliary size %d exceeds limit %d", result.AuxiliaryHeader.AuxiliarySize, maxDtxMessageSize)
+		}
 		auxBytes := make([]byte, result.AuxiliaryHeader.AuxiliarySize)
 		_, err = io.ReadFull(reader, auxBytes)
 		if err != nil {
@@ -75,6 +85,9 @@ func ReadMessage(reader io.Reader) (Message, error) {
 
 	result.RawBytes = make([]byte, 0)
 	if result.HasPayload() {
+		if result.PayloadLength() > maxDtxMessageSize {
+			return Message{}, fmt.Errorf("dtx payload length %d exceeds limit %d", result.PayloadLength(), maxDtxMessageSize)
+		}
 		payloadBytes := make([]byte, result.PayloadLength())
 		_, err := io.ReadFull(reader, payloadBytes)
 		if err != nil {
@@ -227,6 +240,9 @@ func (d Message) parsePayloadBytes(messageBytes []byte) ([]interface{}, error) {
 
 // PayloadLength equals PayloadHeader.TotalPayloadLength - d.PayloadHeader.AuxiliaryLength so it is the Payload without the Auxiliary
 func (d Message) PayloadLength() uint32 {
+	if d.PayloadHeader.TotalPayloadLength <= d.PayloadHeader.AuxiliaryLength {
+		return 0
+	}
 	return d.PayloadHeader.TotalPayloadLength - d.PayloadHeader.AuxiliaryLength
 }
 

@@ -95,6 +95,11 @@ type UsbMuxHeader struct {
 	Tag     uint32
 }
 
+// maxUsbmuxMessageSize caps the payload a single usbmux message may carry.
+// Legitimate messages (device lists, attach/detach events) are far smaller;
+// oversized or corrupt length fields must not trigger huge allocations.
+const maxUsbmuxMessageSize = 64 * 1024 * 1024 // 64 MiB
+
 // Send sends and encodes a Plist using the usbmux Encoder. Increases the connection tag by one.
 func (muxConn *UsbMuxConnection) Send(msg interface{}) error {
 	if muxConn.deviceConn == nil {
@@ -166,10 +171,18 @@ func (muxConn UsbMuxConnection) decode(r io.Reader) (UsbMuxMessage, error) {
 		return UsbMuxMessage{}, err
 	}
 
-	payloadBytes := make([]byte, muxHeader.Length-16)
+	if muxHeader.Length < 16 {
+		return UsbMuxMessage{}, fmt.Errorf("usbmux message length %d smaller than header size", muxHeader.Length)
+	}
+	payloadLength := muxHeader.Length - 16
+	if payloadLength > maxUsbmuxMessageSize {
+		return UsbMuxMessage{}, fmt.Errorf("usbmux message length %d exceeds limit %d", payloadLength, maxUsbmuxMessageSize)
+	}
+
+	payloadBytes := make([]byte, payloadLength)
 	n, err := io.ReadFull(r, payloadBytes)
 	if err != nil {
-		return UsbMuxMessage{}, fmt.Errorf("Error '%s' while reading usbmux package. Only %d bytes received instead of %d", err.Error(), n, muxHeader.Length-16)
+		return UsbMuxMessage{}, fmt.Errorf("Error '%s' while reading usbmux package. Only %d bytes received instead of %d", err.Error(), n, payloadLength)
 	}
 	log.Tracef("UsbMux Receive on %v", &muxConn.deviceConn)
 
